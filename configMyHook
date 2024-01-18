@@ -1,0 +1,30 @@
+import { useEffect, useState } from 'react';
+
+const useRecaptchaToken = (siteKey, action) => {
+  const [token, setToken] = useState(null);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const getToken = async () => {
+      try {
+        const grecaptcha = window.grecaptcha.enterprise;
+        await new Promise((resolve) => grecaptcha.ready(resolve));
+
+        // 执行 reCAPTCHA，获取 token
+        const tokenValue = await grecaptcha.execute(siteKey, { action });
+        setToken(tokenValue);
+      } catch (error) {
+        setError(error);
+      }
+    };
+
+    getToken();
+  }, [siteKey, action]);
+
+  return { token, error };
+};
+
+export default useRecaptchaToken;
+
+
+const { token, error } = useRecaptchaToken(siteKey, action);
